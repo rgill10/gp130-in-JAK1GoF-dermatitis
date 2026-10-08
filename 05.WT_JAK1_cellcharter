@@ -1,0 +1,30 @@
+#!/bin/bash
+#BSUB -J RunCellCharter
+#BSUB -P acc_ji_lab
+#BSUB -q premium
+#BSUB -n 4
+#BSUB -Ep 'mailx -s "$LSB_JOBNAME $LSB_JOBID done with status $LSB_JOB_STATUS" raman.gill@icahn.mssm.edu'
+#BSUB -R "rusage[mem=250GB]"
+#BSUB -R "span[hosts=1]"
+#BSUB -W 96:00
+#BSUB -o run_cellcharter.%J.log
+#BSUB -eo run_cellcharter.%J.err
+#BSUB -L /bin/bash
+
+
+ml singularity/3.6.4
+
+MERPY="/sc/arion/projects/ji_lab/TOOLS/sif/merpy_latest.sif"
+
+INPUT_H5AD="/sc/arion/projects/ji_lab/USER/gillr10/RG_data/MERFISH/20250710_Cellcharter_WT_JAK1/20250710_MERFISH_WT_JAK1_withEntityID.h5ad"
+RUN_NAME='20250710_MERFISH_WT_JAK1'
+OUTPUT_DIR="/sc/arion/projects/ji_lab/USER/gillr10/RG_data/MERFISH/20250710_Cellcharter_WT_JAK1/run2"
+LIBRARY_KEY="orig.ident"
+
+mkdir -p $OUTPUT_DIR
+singularity run $MERPY \
+python /sc/arion/projects/ji_lab/TOOLS/merfish-analysis/bin/py/run_cellcharter.py \
+-i $INPUT_H5AD \
+-n $RUN_NAME \
+-o $OUTPUT_DIR \
+-l $LIBRARY_KEY 
